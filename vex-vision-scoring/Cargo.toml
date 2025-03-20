@@ -6,8 +6,8 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-axum = "0.6"
+axum = "0.8.1"
 tokio = { version = "1", features = ["full"] }
-opencv = "0.79"
-gstreamer = "0.20"
-onnxruntime = "0.19"
+opencv = "0.94.3"
+onnxruntime = "0.0.14"
+rocket = "0.5.1"
