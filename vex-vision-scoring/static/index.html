@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Camera Page</title>
+</head>
+<body>
+  <h1>Camera Test</h1>
+  <select id="cameraSelect"></select>
+  <video id="cameraFeed" autoplay playsinline width="640" height="480"></video>
+
+  <script type="module">
+    import init from "./pkg/client.js";
+    init();
+  </script>
+</body>
+</html>
+

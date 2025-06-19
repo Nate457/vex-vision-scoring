@@ -1,13 +1,2 @@
-[package]
-name = "vex-vision-scoring"
-version = "0.1.0"
-edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
-[dependencies]
-axum = "0.8.1"
-tokio = { version = "1", features = ["full"] }
-opencv = "0.94.3"
-onnxruntime = "0.0.14"
-rocket = "0.5.1"
+[workspace]
+members = ["server", "client"]
