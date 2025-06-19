@@ -7,12 +7,54 @@
 <body>
   <h1>Camera Test</h1>
   <select id="cameraSelect"></select>
-  <video id="cameraFeed" autoplay playsinline width="640" height="480"></video>
+  <div id="cameraContainer">
+    <video id="cameraFeed" autoplay playsinline width="640" height="480"></video>
+  </div>
 
   <script type="module">
     import init from "./pkg/client.js";
     init();
+
+    const video = document.getElementById("cameraFeed");
+    const cameraSelect = document.getElementById("cameraSelect");
+    const cameraContainer = document.getElementById("cameraContainer");
+
+    async function setupCameras() {
+      try {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const videoDevices = devices.filter(device => device.kind === 'videoinput');
+
+        if (videoDevices.length === 0) {
+          showTrollFace();
+          return;
+        }
+
+        videoDevices.forEach(device => {
+          const option = document.createElement("option");
+          option.value = device.deviceId;
+          option.text = device.label || `Camera ${cameraSelect.length + 1}`;
+          cameraSelect.appendChild(option);
+        });
+
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { deviceId: videoDevices[0].deviceId }
+        });
+        video.srcObject = stream;
+
+      } catch (err) {
+        console.error("Error accessing camera:", err);
+        showTrollFace();
+      }
+    }
+
+    function showTrollFace() {
+      cameraContainer.innerHTML = `
+        <img src="https://i.kym-cdn.com/entries/icons/original/000/000/091/TrollFace.jpg" 
+             alt="Troll Face" width="640" height="480">
+      `;
+    }
+
+    setupCameras();
   </script>
 </body>
 </html>
-
