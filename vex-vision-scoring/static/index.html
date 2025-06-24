@@ -1,60 +1,83 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Camera Page</title>
-</head>
 <body>
-  <h1>Camera Test</h1>
+  <h1>VEX Robotics Field Score Tracker</h1>
+
+  <label for="cameraSelect">Choose Camera:</label>
   <select id="cameraSelect"></select>
-  <div id="cameraContainer">
-    <video id="cameraFeed" autoplay playsinline width="640" height="480"></video>
+
+  <button id="toggleBtn">Start Tracking</button>
+
+  <video id="videoPreview" autoplay playsinline style="width: 640px; height: 480px; border: 1px solid black; margin-top: 1em;"></video>
+
+  <div id="scoreDisplay" style="margin-top: 1em; font-family: monospace; font-size: 1.2em;">
+    No scores yet.
   </div>
 
   <script type="module">
     import init from "./pkg/client.js";
     init();
 
-    const video = document.getElementById("cameraFeed");
-    const cameraSelect = document.getElementById("cameraSelect");
-    const cameraContainer = document.getElementById("cameraContainer");
+    const videoDevices = [];
+    let currentStream = null;
 
     async function setupCameras() {
       try {
-        const devices = await navigator.mediaDevices.enumerateDevices();
-        const videoDevices = devices.filter(device => device.kind === 'videoinput');
+        await navigator.mediaDevices.getUserMedia({ video: true }); // Request permission
 
-        if (videoDevices.length === 0) {
-          showTrollFace();
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const videoInputDevices = devices.filter(d => d.kind === 'videoinput');
+        const cameraSelect = document.getElementById('cameraSelect');
+
+        if (videoInputDevices.length === 0) {
+          cameraSelect.innerHTML = '<option>No Cameras Found</option>';
           return;
         }
 
-        videoDevices.forEach(device => {
-          const option = document.createElement("option");
+        cameraSelect.innerHTML = ''; // Clear old options
+
+        videoInputDevices.forEach((device, i) => {
+          const option = document.createElement('option');
           option.value = device.deviceId;
-          option.text = device.label || `Camera ${cameraSelect.length + 1}`;
+          option.text = device.label || `Camera ${i + 1}`;
           cameraSelect.appendChild(option);
+          videoDevices.push(device.deviceId);
         });
 
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: { deviceId: videoDevices[0].deviceId }
-        });
-        video.srcObject = stream;
+        // Start showing the first camera by default
+        startCameraPreview(videoInputDevices[0].deviceId);
+
+        // Change preview when user selects a different camera
+        cameraSelect.onchange = () => {
+          const selectedId = cameraSelect.value;
+          startCameraPreview(selectedId);
+        };
 
       } catch (err) {
-        console.error("Error accessing camera:", err);
-        showTrollFace();
+        console.error('Error enumerating devices:', err);
+        const cameraSelect = document.getElementById('cameraSelect');
+        cameraSelect.innerHTML = '<option>Error Detecting Cameras</option>';
       }
     }
 
-    function showTrollFace() {
-      cameraContainer.innerHTML = `
-        <img src="https://i.kym-cdn.com/entries/icons/original/000/000/091/TrollFace.jpg" 
-             alt="Troll Face" width="640" height="480">
-      `;
+    async function startCameraPreview(deviceId) {
+      if (currentStream) {
+        // Stop old stream tracks
+        currentStream.getTracks().forEach(track => track.stop());
+      }
+
+      try {
+        const constraints = {
+          video: {
+            deviceId: { exact: deviceId }
+          }
+        };
+        currentStream = await navigator.mediaDevices.getUserMedia(constraints);
+        const video = document.getElementById('videoPreview');
+        video.srcObject = currentStream;
+      } catch (err) {
+        console.error('Error starting camera preview:', err);
+      }
     }
 
     setupCameras();
   </script>
 </body>
-</html>

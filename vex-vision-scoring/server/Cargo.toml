@@ -9,5 +9,6 @@ axum = "0.8.1"
 tokio = { version = "1", features = ["full"] }
 opencv = { version = "0.94.3", features = ["clang-runtime"] }
 onnxruntime = "0.0.14"
-rocket = "0.5.1"
-
+rocket = { version = "0.5.1-rc.3", features = ["json"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
