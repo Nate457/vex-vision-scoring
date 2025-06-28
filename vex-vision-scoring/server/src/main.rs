@@ -12,6 +12,7 @@ use opencv::{
 };
 
 
+
 #[derive(Serialize, Clone)]
 struct ScoreData {
     camera_id: i32,
@@ -106,7 +107,14 @@ fn multi_camera_capture(shared_scores: SharedScores, active: ActiveFlag) {
 
 
 fn detect_objects(frame: &Mat) -> u32 {
-    let gray = Mat::default();
+    let mut gray = Mat::default();
+    imgproc::cvt_color(
+        frame,
+        &mut gray,
+        imgproc::COLOR_BGR2GRAY,
+        0,
+        core::AlgorithmHint::ALGO_HINT_DEFAULT
+    ).unwrap();
 
     let mut thresh = Mat::default();
     imgproc::threshold(&gray, &mut thresh, 200.0, 255.0, imgproc::THRESH_BINARY).unwrap();
