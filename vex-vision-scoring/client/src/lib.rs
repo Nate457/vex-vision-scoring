@@ -35,7 +35,7 @@ pub fn start() {
         let window_inner = window_clone.clone();
 
         spawn_local(async move {
-            let mut opts = web_sys::RequestInit::new();
+            let opts = web_sys::RequestInit::new();
             opts.set_method("POST");
 
             let fetch_promise = window_inner.fetch_with_str_and_init("/api/toggle_tracking", &opts);

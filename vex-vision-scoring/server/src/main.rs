@@ -11,6 +11,7 @@ use opencv::{
     imgproc,
 };
 
+
 #[derive(Serialize, Clone)]
 struct ScoreData {
     camera_id: i32,
@@ -72,7 +73,7 @@ fn multi_camera_capture(shared_scores: SharedScores, active: ActiveFlag) {
     let mut captures: Vec<(i32, videoio::VideoCapture)> = vec![];
 
     for &id in &camera_ids {
-        let mut cap = videoio::VideoCapture::new(id, videoio::CAP_ANY).unwrap();
+        let cap = videoio::VideoCapture::new(id, videoio::CAP_ANY).unwrap();
         if cap.is_opened().unwrap() {
             captures.push((id, cap));
             println!("Opened camera {}", id);
@@ -105,14 +106,7 @@ fn multi_camera_capture(shared_scores: SharedScores, active: ActiveFlag) {
 
 
 fn detect_objects(frame: &Mat) -> u32 {
-    let mut gray = Mat::default();
-    imgproc::cvt_color(
-        frame,
-        &mut gray,
-        imgproc::COLOR_BGR2GRAY,
-        0,
-        core::AlgorithmHint::ALGO_HINT_DEFAULT
-    ).unwrap();
+    let gray = Mat::default();
 
     let mut thresh = Mat::default();
     imgproc::threshold(&gray, &mut thresh, 200.0, 255.0, imgproc::THRESH_BINARY).unwrap();
